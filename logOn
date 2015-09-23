@@ -1,0 +1,27 @@
+#!/usr/bin/expect
+# Set up various other variables here ($user, $password)
+set user USERNAME
+set password PASSWORD
+
+# Get the list of hosts, one per line #####
+set f [open "hosts.txt"]
+set hosts [split [read $f] "\n"]
+close $f
+
+# Get the commands to run, one per line
+set f [open "command.txt"]
+set commands [split [read $f] "\n"]
+close $f
+
+# Iterate over the hosts
+foreach host $hosts {
+    spawn ssh -Y -oStrictHostKeyChecking=no -oCheckHostIP=no $user@$host
+    expect "assword:"
+    send "$password\r"
+
+    # Iterate over the commands
+    foreach cmd $commands {
+        expect "$ "
+        send "$cmd\r"
+    }
+}
